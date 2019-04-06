@@ -69,11 +69,12 @@ int EventHandler(u32 nInGame)
 				}
 			}
 
-			if (gVar.pKeys[SDLK_ESCAPE] & gVar.pKeys[SDLK_BACKSPACE] & gVar.pKeys[SDLK_TAB]) return (1);	// Emergency exit.
+			// if (gVar.pKeys[SDLK_ESCAPE] & gVar.pKeys[SDLK_BACKSPACE] & gVar.pKeys[SDLK_TAB]) return (1);	// Emergency exit.
+			if (gVar.pKeys[SDLK_END] || (gBreak.nPhase == e_Game_Pause && gVar.pKeys[SDLK_ESCAPE])) return (1);	// RG exit.
 
 			// Gestion de la pause.
 			//TODO DINGUX
-			if (nInGame == 1 && gVar.pKeys[SDLK_ESCAPE] & (nWait==0))
+			if (nInGame == 1 && gVar.pKeys[SDLK_RETURN] & (nWait==0))
 			{
 				nWait=10;
 				if (gBreak.nPhase == e_Game_Pause)
@@ -97,7 +98,7 @@ int EventHandler(u32 nInGame)
 						// On se remet sur le buffer précédent.
 						//SDL_BlitSurface(gVar.pScreen, NULL, gVar.hwscreen, NULL);
 						//SDL_UpdateRect(gVar.hwscreen, 0, 0, SCR_Width, SCR_Height);
-						SDL_Flip(gVar.pScreen);
+						// SDL_Flip(gVar.pScreen);
 						// Affichage du texte.
 						char	pStrPause[] = "PAUSE";
 						u32 i = Font_Print(0, 10, pStrPause, FONT_NoDisp);	// Pour centrage.
@@ -106,9 +107,9 @@ int EventHandler(u32 nInGame)
 						//SDL_BlitSurface(gVar.pScreen, NULL, gVar.hwscreen, NULL);
 						//SDL_UpdateRect(gVar.hwscreen, 0, 0, SCR_Width, SCR_Height);
 						// On remet sur le buffer à l'écran.
-						SDL_Flip(gVar.pScreen);
-						//SDL_BlitSurface(gVar.pScreen, NULL, gVar.hwscreen, NULL);
-						//SDL_UpdateRect(gVar.hwscreen, 0, 0, SCR_Width, SCR_Height);
+						// SDL_Flip(gVar.pScreen);
+						SDL_BlitSurface(gVar.pScreen, NULL, gVar.hwscreen, NULL);
+						SDL_UpdateRect(gVar.hwscreen, 0, 0, SCR_Width, SCR_Height);
 					}
 					SDL_ShowCursor(SDL_DISABLE);		// Cache le pointeur de la souris.
 				}
@@ -248,7 +249,7 @@ void Game(void)
 		if (EventHandler(1) != 0) break;
 
 		// Copie de l'image de fond.
-        if (SDL_BlitSurface(gVar.pLevel, NULL, gVar.pScreen, NULL) < 0) fprintf(stderr, "BlitSurface error: %s\n", SDL_GetError());
+        if (gBreak.nPhase != e_Game_Pause && SDL_BlitSurface(gVar.pLevel, NULL, gVar.pScreen, NULL) < 0) fprintf(stderr, "BlitSurface error: %s\n", SDL_GetError());
 
 		Breaker();
 		SprDisplayAll();
@@ -292,6 +293,25 @@ int main(int argc, char *argv[])
 
 	assert(MstCheckStructSizes() == 0);		// Debug : Vérifie la taille des structures spécifiques des monstres.
 
+
+	// Load sprites.
+	SprInitEngine();
+	SprLoadBMP("gfx/bricks.bmp", gVar.pSprColors, SPR_Palette_Idx);
+	SprLoadBMP("gfx/font_small.bmp", NULL, 0);
+
+	// Load levels backgound pictures.
+	char	*pBkgLevFilenames[GFX_NbBkg] = { "gfx/lev1.bmp", "gfx/lev2.bmp", "gfx/lev3.bmp", "gfx/lev4.bmp", "gfx/levdoh.bmp" };
+	for (i = 0; i < GFX_NbBkg; i++)
+	{
+		if ((gVar.pLev[i] = SDL_LoadBMP(pBkgLevFilenames[i])) == NULL) {
+			fprintf(stderr, "Couldn't load picture '%s' : %s\n", pBkgLevFilenames[i], SDL_GetError());
+			exit(1);
+		}
+	}
+	gVar.pLevel = gVar.pLev[0];
+
+
+
 	// SDL Init.
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
 		fprintf(stderr, "Unable to init SDL: %s\n", SDL_GetError());
@@ -309,30 +329,17 @@ int main(int argc, char *argv[])
 	//gVar.pScreen = SDL_SetVideoMode(SCR_Width, SCR_Height, 16, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN);
 	gVar.pScreen = SDL_CreateRGBSurface(SDL_SWSURFACE, SCR_Width, SCR_Height, 8, 0, 0, 0, 0);
 	gVar.hwscreen = SDL_SetVideoMode(SCR_Width, SCR_Height, 16, SDL_HWSURFACE);
+
 	if (gVar.pScreen == NULL)
 	{
 		fprintf(stderr, "Couldn't set video mode: %sn",SDL_GetError());
 		exit(1);
 	}
+	SDL_ShowCursor(SDL_DISABLE);
 
 	// Preca Sinus et Cosinus.
 	PrecaSinCos();
 
-	// Load sprites.
-	SprInitEngine();
-	SprLoadBMP("gfx/bricks.bmp", gVar.pSprColors, SPR_Palette_Idx);
-	SprLoadBMP("gfx/font_small.bmp", NULL, 0);
-
-	// Load levels backgound pictures.
-	char	*pBkgLevFilenames[GFX_NbBkg] = { "gfx/lev1.bmp", "gfx/lev2.bmp", "gfx/lev3.bmp", "gfx/lev4.bmp", "gfx/levdoh.bmp" };
-	for (i = 0; i < GFX_NbBkg; i++)
-	{
-		if ((gVar.pLev[i] = SDL_LoadBMP(pBkgLevFilenames[i])) == NULL) {
-			fprintf(stderr, "Couldn't load picture '%s' : %s\n", pBkgLevFilenames[i], SDL_GetError());
-			exit(1);
-		}
-	}
-	gVar.pLevel = gVar.pLev[0];
 
 	// Load menus backgound pictures.
 	char	*pBkgMenFilenames[MENU_NbBkg] = { "gfx/bkg1.bmp", "gfx/bkg2.bmp" };
@@ -382,7 +389,7 @@ int main(int argc, char *argv[])
 	}
 
 
-	SDL_ShowCursor(1);		// Réautorise l'affichage du curseur de la souris.
+	SDL_ShowCursor(SDL_DISABLE);		// Réautorise l'affichage du curseur de la souris.
 
 	// Libère les ressources des sprites.
 	SprRelease();

@@ -264,8 +264,8 @@ u32 MenuMain_Main(void)
 			gMenu.nFadeVal = 256;
 			gMenu.nState = MENU_State_FadeOut;
 		}
-		// Validation B ou Start
-		if (gVar.pKeys[SDLK_RETURN] || gVar.pKeys[SDLK_LALT])
+		// Validation A
+		if (gVar.pKeys[SDLK_LCTRL])
 		{
 			Mix_FreeChunk( menu_sound );
 			Mix_FreeChunk( intro_sound );
@@ -541,7 +541,7 @@ u32 MenuHighScores_Main(void)
 			gMenu.nFadeVal = 256;
 			gMenu.nState = MENU_State_FadeOut;
 		}
-		if (gVar.pKeys[SDLK_RETURN] || gVar.pKeys[SDLK_LALT])
+		if (gVar.pKeys[SDLK_LCTRL])
 		{
 			gMenu.nFadeVal = 256;
 			gMenu.nState = MENU_State_FadeOut;
@@ -853,7 +853,7 @@ u32 MenuGetName_Main(void)
 			nWait = 10;
 		}
 		
-		if (gVar.pKeys[SDLK_LCTRL] & (nWait==0))
+		if (gVar.pKeys[SDLK_LALT] & (nWait==0))
 		{
 			if (gMenu.nScIdx) gMenu.pScName[--gMenu.nScIdx] = 0;
 			nWait=10;

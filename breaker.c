@@ -1435,8 +1435,8 @@ void BreakerGame(void)
 			nWait = 0;
 			gBreak.nPhase = e_Game_Normal;
 		}
-		// Appuie sur Start ou B -> Sélection du niveau
-		if (gVar.pKeys[SDLK_RETURN] || gVar.pKeys[SDLK_LALT])
+		// Appuie sur A -> Sélection du niveau
+		if (gVar.pKeys[SDLK_LCTRL])
 		{
 			nWait = 10;
 			gBreak.nPhase = e_Game_Normal;
