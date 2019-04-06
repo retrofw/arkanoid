@@ -1,0 +1,10 @@
+Package: arkanoid
+Version: 
+Description: RetroGame port of Arkanoid
+Section: emus
+Priority: optional
+Maintainer: pingflood
+Architecture: mipsel
+Homepage: https://github.com/pingflood/arkanoid
+Depends:
+Source: https://github.com/pingflood/arkanoid
