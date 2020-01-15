@@ -1,0 +1,4 @@
+title=Arkanoid
+description=Arkanoid port
+exec=/home/retrofw/games/arkanoid/arkanoid.dge
+clock=600

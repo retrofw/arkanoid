@@ -1,0 +1,16 @@
+# Mon Makefile
+#PATH = /usr/include/SDL
+TARGET = arkanoid/arkanoid.dge
+OBJECTS = /src/main.o /src/anims.o /src/sprites.o /src/dust.o /src/frame.o /src/mst.o /src/animspr.o /src/fire.o /src/menu.o /src/preca.o /src/breaker.o /src/font.o /src/monsters.o /src/snd.o
+CFLAGS = -O3 -Wall -g -I/usr/include/SDL -L/usr/lib 
+LIBS = -lm -lSDL -lSDL_image -lSDL_mixer
+CC = gcc
+
+all: $(TARGET)
+
+clean:
+	rm src/*.o
+
+$(TARGET): $(OBJECTS)
+	$(CC) $(CFLAGS) -o $@ $^ $(LIBS) 
+

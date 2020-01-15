@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=Arkanoid
+Comment=Arkanoid port
+Exec=arkanoid.dge
+Icon=arkanoid
+Categories=games;
+X-OD-Manual=arkanoid.man.txt
+X-OD-Selector=
+X-OD-Filter=
+Terminal=false
+Type=Application
+StartupNotify=true
